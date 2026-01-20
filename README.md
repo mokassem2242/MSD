@@ -1,5 +1,7 @@
 # Event-Driven Order Processing System
 
+> **Practice Project**: This project is designed for **learning and practicing microservices architecture** and **Domain-Driven Design (DDD)**. It implements a modular monolith that demonstrates microservices patterns, event-driven communication, saga orchestration, and clean architecture principles.
+
 ## Overview
 
 This document describes the architecture of the **Event-Driven Order Processing System** implemented as a **Modular Monolith** that is microservices-ready.
