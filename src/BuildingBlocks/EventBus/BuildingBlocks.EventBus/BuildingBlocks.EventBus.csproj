@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Messaging\BuildingBlocks.Messaging\BuildingBlocks.Messaging.csproj" />
+  </ItemGroup>
+
 </Project>
