@@ -82,11 +82,30 @@ builder.Services.AddSwaggerGen(options =>
 // ORDER SERVICE CONFIGURATION
 // ============================================
 
-// Database - Register DbContextOptions
+// Get connection string from configuration
+var orderDbConnectionString = builder.Configuration.GetConnectionString("OrderDb")
+    ?? throw new InvalidOperationException("Connection string 'OrderDb' not found.");
+
+// Register DbContextOptions for OrderDbContext
 builder.Services.AddSingleton<DbContextOptions<OrderDbContext>>(serviceProvider =>
 {
     var optionsBuilder = new DbContextOptionsBuilder<OrderDbContext>();
-    optionsBuilder.UseInMemoryDatabase("OrderDb");
+    optionsBuilder.UseSqlServer(orderDbConnectionString, sqlOptions =>
+    {
+        sqlOptions.MigrationsAssembly("Order.Infrastructure");
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null);
+    });
+    
+    // Enable sensitive data logging in development
+    if (builder.Environment.IsDevelopment())
+    {
+        optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.EnableDetailedErrors();
+    }
+    
     return optionsBuilder.Options;
 });
 
