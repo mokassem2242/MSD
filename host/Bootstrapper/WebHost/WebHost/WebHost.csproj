@@ -8,6 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference all API projects -->
+    <ProjectReference Include="..\..\..\..\src\Order\Order.Api\Order.Api\Order.Api.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Payment\Payment.Api\Payment.Api\Payment.Api.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Inventory\Inventory.Api\Inventory.Api\Inventory.Api.csproj" />
   </ItemGroup>
 
 </Project>

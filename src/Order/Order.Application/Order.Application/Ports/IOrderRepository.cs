@@ -3,6 +3,8 @@ using OrderAggregate = Order.Domain.Aggregates.Order;
 
 namespace Order.Application.Ports;
 
+using Order.Domain.Enums;
+
 /// <summary>
 /// Repository interface for order persistence.
 /// This is a port in the hexagonal architecture - defines what the application needs,
@@ -11,8 +13,13 @@ namespace Order.Application.Ports;
 /// </summary>
 public interface IOrderRepository : IRepository<OrderAggregate, Guid>
 {
-    // Add order-specific methods here if needed, e.g.:
-    // Task<OrderAggregate?> GetByCustomerIdAsync(string customerId);
-    // Task<IEnumerable<OrderAggregate>> GetPendingOrdersAsync();
+    /// <summary>
+    /// Gets all orders with optional filtering.
+    /// </summary>
+    Task<IEnumerable<OrderAggregate>> GetOrdersAsync(
+        string? customerId = null,
+        OrderStatus? status = null,
+        int? skip = null,
+        int? take = null);
 }
 

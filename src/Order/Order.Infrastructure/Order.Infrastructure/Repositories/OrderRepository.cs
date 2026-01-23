@@ -48,5 +48,40 @@ public class OrderRepository : IOrderRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<IEnumerable<OrderAggregate>> GetOrdersAsync(
+        string? customerId = null,
+        Domain.Enums.OrderStatus? status = null,
+        int? skip = null,
+        int? take = null)
+    {
+        var query = _context.Orders
+            .Include(o => o.OrderItems)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(customerId))
+        {
+            query = query.Where(o => o.CustomerId == customerId);
+        }
+
+        if (status.HasValue)
+        {
+            query = query.Where(o => o.Status == status.Value);
+        }
+
+        if (skip.HasValue)
+        {
+            query = query.Skip(skip.Value);
+        }
+
+        if (take.HasValue)
+        {
+            query = query.Take(take.Value);
+        }
+
+        return await query
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
 }
 
