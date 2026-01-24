@@ -134,6 +134,9 @@ builder.Services.AddScoped<CancelOrderCommandHandler>();
 builder.Services.AddScoped<GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<GetOrdersQueryHandler>();
 
+// Order Service - Database Seeder
+builder.Services.AddScoped<OrderDbSeeder>();
+
 // ============================================
 // PAYMENT SERVICE CONFIGURATION
 // ============================================
@@ -184,5 +187,21 @@ app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
     .WithTags("Health")
     .WithName("HealthCheck");
+
+// Ensure database is created and seed data (only in Development)
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+        
+        // Ensure database is created
+        await context.Database.EnsureCreatedAsync();
+        
+        // Seed initial data
+        var seeder = scope.ServiceProvider.GetRequiredService<OrderDbSeeder>();
+        await seeder.SeedAsync();
+    }
+}
 
 app.Run();
