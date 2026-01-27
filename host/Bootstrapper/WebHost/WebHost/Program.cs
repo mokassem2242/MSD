@@ -1,10 +1,16 @@
 using BuildingBlocks.EventBus;
+using BuildingBlocks.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Order.Application.Handlers;
 using Order.Application.Ports;
 using Order.Infrastructure.DomainEvents;
 using Order.Infrastructure.Persistence;
 using Order.Infrastructure.Repositories;
+using Payment.Application.Handlers;
+using Payment.Application.Ports;
+using Payment.Infrastructure.DomainEvents;
+using Payment.Infrastructure.Persistence;
+using Payment.Infrastructure.Repositories;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +30,8 @@ try
     builder.Services.AddOpenApi();
     builder.Services.AddControllers()
         .AddApplicationPart(typeof(Order.Api.Controllers.OrdersController).Assembly)
+        .AddApplicationPart(typeof(Payment.Api.Controllers.PaymentsController).Assembly)
         // Add other API assemblies as they're implemented
-        // .AddApplicationPart(typeof(Payment.Api.Controllers.PaymentsController).Assembly)
         // .AddApplicationPart(typeof(Inventory.Api.Controllers.InventoryController).Assembly)
         ;
 
@@ -53,8 +59,8 @@ try
         var xmlFiles = new[]
         {
             "Order.Api.xml",
+            "Payment.Api.xml",
             // Add other API XML files as they're implemented
-            // "Payment.Api.xml",
             // "Inventory.Api.xml"
         };
 
@@ -125,15 +131,15 @@ try
     builder.Services.AddScoped<OrderDbContext>(serviceProvider =>
     {
         var options = serviceProvider.GetRequiredService<DbContextOptions<OrderDbContext>>();
-        var dispatcher = serviceProvider.GetRequiredService<DomainEventDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<Order.Infrastructure.DomainEvents.DomainEventDispatcher>();
         return new OrderDbContext(options, dispatcher);
     });
 
     // Event Bus (Shared across all services)
     builder.Services.AddSingleton<IEventBus, InMemoryEventBus>();
 
-    // Domain Event Dispatcher
-    builder.Services.AddScoped<DomainEventDispatcher>();
+    // Order Domain Event Dispatcher
+    builder.Services.AddScoped<Order.Infrastructure.DomainEvents.DomainEventDispatcher>();
 
     // Order Service - Repositories
     builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -148,6 +154,61 @@ try
 
     // Order Service - Database Seeder
     builder.Services.AddScoped<OrderDbSeeder>();
+
+    // ============================================
+    // PAYMENT SERVICE CONFIGURATION
+    // ============================================
+
+    // Get connection string from configuration
+    var paymentDbConnectionString = builder.Configuration.GetConnectionString("PaymentDb")
+        ?? throw new InvalidOperationException("Connection string 'PaymentDb' not found.");
+
+    // Register DbContextOptions for PaymentDbContext
+    builder.Services.AddSingleton<DbContextOptions<PaymentDbContext>>(serviceProvider =>
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<PaymentDbContext>();
+        optionsBuilder.UseSqlServer(paymentDbConnectionString, sqlOptions =>
+        {
+            sqlOptions.MigrationsAssembly("Payment.Infrastructure");
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        });
+        
+        // Enable sensitive data logging in development
+        if (builder.Environment.IsDevelopment())
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.EnableDetailedErrors();
+        }
+        
+        return optionsBuilder.Options;
+    });
+
+    // Payment Domain Event Dispatcher
+    builder.Services.AddScoped<Payment.Infrastructure.DomainEvents.DomainEventDispatcher>();
+
+    // Register PaymentDbContext with DomainEventDispatcher
+    builder.Services.AddScoped<PaymentDbContext>(serviceProvider =>
+    {
+        var options = serviceProvider.GetRequiredService<DbContextOptions<PaymentDbContext>>();
+        var dispatcher = serviceProvider.GetRequiredService<Payment.Infrastructure.DomainEvents.DomainEventDispatcher>();
+        return new PaymentDbContext(options, dispatcher);
+    });
+
+    // Payment Service - Repositories
+    builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+    // Payment Service - Command Handlers
+    builder.Services.AddScoped<ProcessPaymentCommandHandler>();
+    builder.Services.AddScoped<RefundPaymentCommandHandler>();
+
+    // Payment Service - Event Handler (consumes OrderCreated)
+    builder.Services.AddScoped<OrderCreatedEventHandler>();
+
+    // Payment Service - Database Seeder
+    builder.Services.AddScoped<PaymentDbSeeder>();
 
     var app = builder.Build();
 
@@ -187,21 +248,57 @@ try
         .WithTags("Health")
         .WithName("HealthCheck");
 
-    // Ensure database is created and seed data (only in Development)
+    // Ensure databases are created and seed data (only in Development)
     if (app.Environment.IsDevelopment())
     {
         using (var scope = app.Services.CreateScope())
         {
-            var context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-            
-            // Ensure database is created
-            await context.Database.EnsureCreatedAsync();
-            
-            // Seed initial data
-            var seeder = scope.ServiceProvider.GetRequiredService<OrderDbSeeder>();
-            await seeder.SeedAsync();
+            // Order Service Database
+            var orderContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+            await orderContext.Database.EnsureCreatedAsync();
+            var orderSeeder = scope.ServiceProvider.GetRequiredService<OrderDbSeeder>();
+            await orderSeeder.SeedAsync();
+
+            // Payment Service Database
+            var paymentContext = scope.ServiceProvider.GetRequiredService<PaymentDbContext>();
+            await paymentContext.Database.EnsureCreatedAsync();
+            var paymentSeeder = scope.ServiceProvider.GetRequiredService<PaymentDbSeeder>();
+            await paymentSeeder.SeedAsync();
         }
     }
+
+    // Subscribe to integration events
+    // CRITICAL: We need to resolve handlers from a scope when events fire, not at startup
+    // This ensures DbContext and other scoped dependencies are available
+    var eventBus = app.Services.GetRequiredService<IEventBus>();
+    var serviceProvider = app.Services; // Store IServiceProvider to create scopes later
+
+    // #region agent log
+    try { var logPath = @"W:\new mentality\MSD\.cursor\debug.log"; System.IO.File.AppendAllText(logPath, System.Text.Json.JsonSerializer.Serialize(new { sessionId = "debug-session", runId = "run1", hypothesisId = "F", location = "Program.cs:SUBSCRIBE", message = "About to subscribe handler with scope resolution", data = new { eventType = "OrderCreated" }, timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }) + "\n"); Console.WriteLine($"[DEBUG] Program.cs:SUBSCRIBE - Using scope-based handler resolution"); } catch (Exception ex) { Console.WriteLine($"[DEBUG ERROR] {ex.Message}"); }
+    // #endregion
+
+    // Subscribe Payment Service to OrderCreated events
+    // Resolve handler from a new scope when event fires to ensure DbContext is available
+    eventBus.Subscribe<OrderCreated>(async (integrationEvent) =>
+    {
+        // Create a new scope for this event handler execution
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var handler = scope.ServiceProvider.GetRequiredService<OrderCreatedEventHandler>();
+            
+            // #region agent log
+            try { var logPath = @"W:\new mentality\MSD\.cursor\debug.log"; System.IO.File.AppendAllText(logPath, System.Text.Json.JsonSerializer.Serialize(new { sessionId = "debug-session", runId = "run1", hypothesisId = "F", location = "Program.cs:EVENT_HANDLER_SCOPE", message = "Handler resolved from scope", data = new { orderId = integrationEvent.OrderId, handlerType = handler.GetType().Name }, timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }) + "\n"); Console.WriteLine($"[DEBUG] Program.cs:EVENT_HANDLER_SCOPE - OrderId={integrationEvent.OrderId}"); } catch (Exception ex) { Console.WriteLine($"[DEBUG ERROR] {ex.Message}"); }
+            // #endregion
+            
+            await handler.HandleAsync(integrationEvent);
+        }
+    });
+
+    // #region agent log
+    try { var logPath = @"W:\new mentality\MSD\.cursor\debug.log"; System.IO.File.AppendAllText(logPath, System.Text.Json.JsonSerializer.Serialize(new { sessionId = "debug-session", runId = "run1", hypothesisId = "F", location = "Program.cs:SUBSCRIBE_COMPLETE", message = "Subscription complete with scope resolution", data = new { }, timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }) + "\n"); Console.WriteLine("[DEBUG] Program.cs:SUBSCRIBE_COMPLETE"); } catch (Exception ex) { Console.WriteLine($"[DEBUG ERROR] {ex.Message}"); }
+    // #endregion
+
+    Log.Information("Subscribed Payment Service to OrderCreated events (with scope-based handler resolution)");
 
     app.Run();
 }
