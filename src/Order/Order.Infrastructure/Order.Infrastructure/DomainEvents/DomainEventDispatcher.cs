@@ -1,11 +1,11 @@
 using BuildingBlocks.EventBus;
 using BuildingBlocks.Messaging;
 using BuildingBlocks.SharedKernel;
-using Order.Domain.Aggregates;
-using Order.Domain.Events;
-using OrderAggregate = Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Domain.Aggregates;
+using Order.Domain.Aggregates.Order.Domain.Events;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
 
-namespace Order.Infrastructure.DomainEvents;
+namespace Order.Domain.Aggregates.Order.Infrastructure.DomainEvents;
 
 /// <summary>
 /// Dispatches domain events by converting them to integration events and publishing via EventBus.

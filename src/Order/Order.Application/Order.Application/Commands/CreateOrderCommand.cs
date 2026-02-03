@@ -1,4 +1,4 @@
-namespace Order.Application.Commands;
+namespace Order.Domain.Aggregates.Order.Application.Commands;
 
 /// <summary>
 /// Command to create a new order.

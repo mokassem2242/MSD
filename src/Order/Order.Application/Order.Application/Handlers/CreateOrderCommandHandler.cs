@@ -1,9 +1,9 @@
-using Order.Application.Commands;
-using Order.Application.Ports;
-using OrderAggregate = Order.Domain.Aggregates.Order;
-using Order.Domain.ValueObjects;
+using Order.Domain.Aggregates.Order.Application.Commands;
+using Order.Domain.Aggregates.Order.Application.Ports;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Domain.ValueObjects;
 
-namespace Order.Application.Handlers;
+namespace Order.Domain.Aggregates.Order.Application.Handlers;
 
 /// <summary>
 /// Handles the CreateOrderCommand by creating an order aggregate and persisting it.

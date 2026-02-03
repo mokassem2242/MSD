@@ -1,9 +1,9 @@
 using BuildingBlocks.SharedKernel;
 using Microsoft.EntityFrameworkCore;
-using Order.Infrastructure.DomainEvents;
-using OrderAggregate = Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Infrastructure.DomainEvents;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
 
-namespace Order.Infrastructure.Persistence;
+namespace Order.Domain.Aggregates.Order.Infrastructure.Persistence;
 
 /// <summary>
 /// Entity Framework Core DbContext for the Order module.

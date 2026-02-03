@@ -1,6 +1,6 @@
-using Order.Domain.Enums;
+using Order.Domain.Aggregates.Order.Domain.Enums;
 
-namespace Order.Application.Queries;
+namespace Order.Domain.Aggregates.Order.Application.Queries;
 
 /// <summary>
 /// Query to get orders with optional filtering.

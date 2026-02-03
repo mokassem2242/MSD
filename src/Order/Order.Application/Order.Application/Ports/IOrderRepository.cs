@@ -1,7 +1,7 @@
 using BuildingBlocks.SharedKernel;
-using OrderAggregate = Order.Domain.Aggregates.Order;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
 
-namespace Order.Application.Ports;
+namespace Order.Domain.Aggregates.Order.Application.Ports;
 
 using Order.Domain.Enums;
 

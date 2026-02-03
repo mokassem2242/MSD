@@ -1,11 +1,11 @@
 using BuildingBlocks.EventBus;
 using BuildingBlocks.Messaging;
 using Microsoft.EntityFrameworkCore;
-using Order.Application.Handlers;
-using Order.Application.Ports;
-using Order.Infrastructure.DomainEvents;
-using Order.Infrastructure.Persistence;
-using Order.Infrastructure.Repositories;
+using Order.Domain.Aggregates.Order.Application.Handlers;
+using Order.Domain.Aggregates.Order.Application.Ports;
+using Order.Domain.Aggregates.Order.Infrastructure.DomainEvents;
+using Order.Domain.Aggregates.Order.Infrastructure.Persistence;
+using Order.Domain.Aggregates.Order.Infrastructure.Repositories;
 using Payment.Application.Handlers;
 using Payment.Application.Ports;
 using Payment.Infrastructure.DomainEvents;
@@ -29,7 +29,7 @@ try
     // Add services to the container
     builder.Services.AddOpenApi();
     builder.Services.AddControllers()
-        .AddApplicationPart(typeof(Order.Api.Controllers.OrdersController).Assembly)
+        .AddApplicationPart(typeof(Order.Domain.Aggregates.Order.Api.Controllers.OrdersController).Assembly)
         .AddApplicationPart(typeof(Payment.Api.Controllers.PaymentsController).Assembly)
         // Add other API assemblies as they're implemented
         // .AddApplicationPart(typeof(Inventory.Api.Controllers.InventoryController).Assembly)
@@ -131,7 +131,7 @@ try
     builder.Services.AddScoped<OrderDbContext>(serviceProvider =>
     {
         var options = serviceProvider.GetRequiredService<DbContextOptions<OrderDbContext>>();
-        var dispatcher = serviceProvider.GetRequiredService<Order.Infrastructure.DomainEvents.DomainEventDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<Order.Domain.Aggregates.Order.Infrastructure.DomainEvents.DomainEventDispatcher>();
         return new OrderDbContext(options, dispatcher);
     });
 
@@ -139,7 +139,7 @@ try
     builder.Services.AddSingleton<IEventBus, InMemoryEventBus>();
 
     // Order Domain Event Dispatcher
-    builder.Services.AddScoped<Order.Infrastructure.DomainEvents.DomainEventDispatcher>();
+    builder.Services.AddScoped<Order.Domain.Aggregates.Order.Infrastructure.DomainEvents.DomainEventDispatcher>();
 
     // Order Service - Repositories
     builder.Services.AddScoped<IOrderRepository, OrderRepository>();

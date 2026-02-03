@@ -1,9 +1,9 @@
 using BuildingBlocks.SharedKernel;
-using Order.Domain.Enums;
-using Order.Domain.Events;
-using Order.Domain.ValueObjects;
+using Order.Domain.Aggregates.Order.Domain.Enums;
+using Order.Domain.Aggregates.Order.Domain.Events;
+using Order.Domain.Aggregates.Order.Domain.ValueObjects;
 
-namespace Order.Domain.Aggregates;
+namespace Order.Domain.Aggregates.Order.Domain.Aggregates;
 
 /// <summary>
 /// Order aggregate root representing a customer order.

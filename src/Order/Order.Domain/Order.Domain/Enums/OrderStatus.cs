@@ -1,4 +1,4 @@
-namespace Order.Domain.Enums;
+namespace Order.Domain.Aggregates.Order.Domain.Enums;
 
 /// <summary>
 /// Represents the current status of an order in its lifecycle.

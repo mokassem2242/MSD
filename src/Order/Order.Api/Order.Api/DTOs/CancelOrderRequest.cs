@@ -1,4 +1,4 @@
-namespace Order.Api.DTOs;
+namespace Order.Domain.Aggregates.Order.Api.DTOs;
 
 /// <summary>
 /// Request DTO for cancelling an order.

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Order.Infrastructure.Migrations
+namespace Order.Domain.Aggregates.Order.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class seeding : Migration

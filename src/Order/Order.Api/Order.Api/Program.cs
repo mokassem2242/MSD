@@ -1,10 +1,10 @@
 using BuildingBlocks.EventBus;
 using Microsoft.EntityFrameworkCore;
-using Order.Application.Handlers;
-using Order.Application.Ports;
-using Order.Infrastructure.DomainEvents;
-using Order.Infrastructure.Persistence;
-using Order.Infrastructure.Repositories;
+using Order.Domain.Aggregates.Order.Application.Handlers;
+using Order.Domain.Aggregates.Order.Application.Ports;
+using Order.Domain.Aggregates.Order.Infrastructure.DomainEvents;
+using Order.Domain.Aggregates.Order.Infrastructure.Persistence;
+using Order.Domain.Aggregates.Order.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

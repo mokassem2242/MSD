@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderAggregate = Order.Domain.Aggregates.Order;
-using Order.Domain.Enums;
-using Order.Domain.ValueObjects;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Domain.Enums;
+using Order.Domain.Aggregates.Order.Domain.ValueObjects;
 
-namespace Order.Infrastructure.Persistence.Configurations;
+namespace Order.Domain.Aggregates.Order.Infrastructure.Persistence.Configurations;
 
 /// <summary>
 /// Entity Framework Core configuration for the Order aggregate.

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Order.Domain.Aggregates;
-using Order.Domain.ValueObjects;
-using OrderAggregate = Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Domain.Aggregates;
+using Order.Domain.Aggregates.Order.Domain.ValueObjects;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
 
-namespace Order.Infrastructure.Persistence;
+namespace Order.Domain.Aggregates.Order.Infrastructure.Persistence;
 
 /// <summary>
 /// Seeds the Order database with initial data for development and testing.

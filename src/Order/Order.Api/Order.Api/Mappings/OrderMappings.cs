@@ -1,7 +1,7 @@
-using Order.Api.DTOs;
-using OrderAggregate = Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Api.DTOs;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
 
-namespace Order.Api.Mappings;
+namespace Order.Domain.Aggregates.Order.Api.Mappings;
 
 /// <summary>
 /// Extension methods for mapping domain models to DTOs.

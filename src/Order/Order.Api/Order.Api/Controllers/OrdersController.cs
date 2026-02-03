@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using Order.Api.DTOs;
-using Order.Api.Mappings;
-using Order.Application.Commands;
-using Order.Application.Handlers;
-using Order.Application.Queries;
-using Order.Domain.Enums;
+using Order.Domain.Aggregates.Order.Api.DTOs;
+using Order.Domain.Aggregates.Order.Api.Mappings;
+using Order.Domain.Aggregates.Order.Application.Commands;
+using Order.Domain.Aggregates.Order.Application.Handlers;
+using Order.Domain.Aggregates.Order.Application.Queries;
+using Order.Domain.Aggregates.Order.Domain.Enums;
 
-namespace Order.Api.Controllers;
+namespace Order.Domain.Aggregates.Order.Api.Controllers;
 
 /// <summary>
 /// Controller for managing orders.

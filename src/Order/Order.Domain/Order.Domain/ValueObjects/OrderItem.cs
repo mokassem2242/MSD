@@ -1,6 +1,6 @@
 using BuildingBlocks.SharedKernel;
 
-namespace Order.Domain.ValueObjects;
+namespace Order.Domain.Aggregates.Order.Domain.ValueObjects;
 
 /// <summary>
 /// Value object representing an item in an order.

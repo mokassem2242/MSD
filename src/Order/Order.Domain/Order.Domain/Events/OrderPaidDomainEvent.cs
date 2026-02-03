@@ -1,6 +1,6 @@
 using BuildingBlocks.SharedKernel;
 
-namespace Order.Domain.Events;
+namespace Order.Domain.Aggregates.Order.Domain.Events;
 
 /// <summary>
 /// Domain event raised when an order is marked as paid.

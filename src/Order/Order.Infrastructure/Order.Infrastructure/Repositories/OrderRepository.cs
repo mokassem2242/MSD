@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Order.Application.Ports;
-using OrderAggregate = Order.Domain.Aggregates.Order;
-using Order.Infrastructure.Persistence;
+using Order.Domain.Aggregates.Order.Application.Ports;
+using OrderAggregate = Order.Domain.Aggregates.Order.Domain.Aggregates.Order;
+using Order.Domain.Aggregates.Order.Infrastructure.Persistence;
 
-namespace Order.Infrastructure.Repositories;
+namespace Order.Domain.Aggregates.Order.Infrastructure.Repositories;
 
 /// <summary>
 /// Entity Framework Core implementation of IOrderRepository.

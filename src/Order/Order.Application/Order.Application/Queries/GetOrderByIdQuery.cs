@@ -1,4 +1,4 @@
-namespace Order.Application.Queries;
+namespace Order.Domain.Aggregates.Order.Application.Queries;
 
 /// <summary>
 /// Query to get an order by its ID.

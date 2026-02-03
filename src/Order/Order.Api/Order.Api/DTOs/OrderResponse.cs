@@ -1,6 +1,6 @@
-using Order.Domain.Enums;
+using Order.Domain.Aggregates.Order.Domain.Enums;
 
-namespace Order.Api.DTOs;
+namespace Order.Domain.Aggregates.Order.Api.DTOs;
 
 /// <summary>
 /// Response DTO for order data.
