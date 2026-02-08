@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Order.Domain.Aggregates.Order.Domain.Aggregates.Order.Infrastructure.Persistence;
+using Order.Domain.Aggregates.Order.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace Order.Domain.Aggregates.Order.Domain.Aggregates.Order.Infrastructure.Migrations
+namespace Order.Domain.Aggregates.Order.Infrastructure.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
     partial class OrderDbContextModelSnapshot : ModelSnapshot
