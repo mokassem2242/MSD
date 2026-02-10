@@ -11,6 +11,10 @@ using Payment.Application.Ports;
 using Payment.Infrastructure.DomainEvents;
 using Payment.Infrastructure.Persistence;
 using Payment.Infrastructure.Repositories;
+using Inventory.Application.Handlers;
+using Inventory.Application.Ports;
+using Inventory.Infrastructure.Persistence;
+using Inventory.Infrastructure.Repositories;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,8 +35,7 @@ try
     builder.Services.AddControllers()
         .AddApplicationPart(typeof(Order.Domain.Aggregates.Order.Api.Controllers.OrdersController).Assembly)
         .AddApplicationPart(typeof(Payment.Api.Controllers.PaymentsController).Assembly)
-        // Add other API assemblies as they're implemented
-        // .AddApplicationPart(typeof(Inventory.Api.Controllers.InventoryController).Assembly)
+        .AddApplicationPart(typeof(Inventory.Api.Controllers.InventoryController).Assembly)
         ;
 
     builder.Services.AddEndpointsApiExplorer();
@@ -60,8 +63,7 @@ try
         {
             "Order.Api.xml",
             "Payment.Api.xml",
-            // Add other API XML files as they're implemented
-            // "Inventory.Api.xml"
+            "Inventory.Api.xml"
         };
 
         foreach (var xmlFile in xmlFiles)
@@ -210,6 +212,41 @@ try
     // Payment Service - Database Seeder
     builder.Services.AddScoped<PaymentDbSeeder>();
 
+    // ============================================
+    // INVENTORY SERVICE CONFIGURATION
+    // ============================================
+
+    var inventoryDbConnectionString = builder.Configuration.GetConnectionString("InventoryDb")
+        ?? throw new InvalidOperationException("Connection string 'InventoryDb' not found.");
+
+    builder.Services.AddSingleton<DbContextOptions<InventoryDbContext>>(serviceProvider =>
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<InventoryDbContext>();
+        optionsBuilder.UseSqlServer(inventoryDbConnectionString, sqlOptions =>
+        {
+            sqlOptions.MigrationsAssembly("Inventory.Infrastructure");
+            sqlOptions.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+        });
+        if (builder.Environment.IsDevelopment())
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.EnableDetailedErrors();
+        }
+        return optionsBuilder.Options;
+    });
+
+    builder.Services.AddScoped<InventoryDbContext>(serviceProvider =>
+    {
+        var options = serviceProvider.GetRequiredService<DbContextOptions<InventoryDbContext>>();
+        return new InventoryDbContext(options);
+    });
+
+    builder.Services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
+    builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+    builder.Services.AddScoped<ReserveInventoryCommandHandler>();
+    builder.Services.AddScoped<OrderInventoryRequestedEventHandler>();
+    builder.Services.AddScoped<InventoryDbSeeder>();
+
     var app = builder.Build();
 
     // 2. Add Serilog Request Logging
@@ -264,6 +301,12 @@ try
             await paymentContext.Database.EnsureCreatedAsync();
             var paymentSeeder = scope.ServiceProvider.GetRequiredService<PaymentDbSeeder>();
             await paymentSeeder.SeedAsync();
+
+            // Inventory Service Database
+            var inventoryContext = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
+            await inventoryContext.Database.EnsureCreatedAsync();
+            var inventorySeeder = scope.ServiceProvider.GetRequiredService<InventoryDbSeeder>();
+            await inventorySeeder.SeedAsync();
         }
     }
 
@@ -299,6 +342,17 @@ try
     // #endregion
 
     Log.Information("Subscribed Payment Service to OrderCreated events (with scope-based handler resolution)");
+
+    // Subscribe Inventory Service to OrderInventoryRequested events
+    eventBus.Subscribe<OrderInventoryRequested>(async (integrationEvent) =>
+    {
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var handler = scope.ServiceProvider.GetRequiredService<OrderInventoryRequestedEventHandler>();
+            await handler.HandleAsync(integrationEvent);
+        }
+    });
+    Log.Information("Subscribed Inventory Service to OrderInventoryRequested events");
 
     app.Run();
 }
