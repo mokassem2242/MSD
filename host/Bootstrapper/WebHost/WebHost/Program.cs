@@ -11,8 +11,10 @@ using Payment.Application.Ports;
 using Payment.Infrastructure.DomainEvents;
 using Payment.Infrastructure.Persistence;
 using Payment.Infrastructure.Repositories;
+using FluentValidation;
 using Inventory.Application.Handlers;
 using Inventory.Application.Ports;
+using Inventory.Application.Validators;
 using Inventory.Infrastructure.Persistence;
 using Inventory.Infrastructure.Repositories;
 using Serilog;
@@ -243,6 +245,7 @@ try
 
     builder.Services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
     builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+    builder.Services.AddValidatorsFromAssemblyContaining<ReserveInventoryCommandValidator>();
     builder.Services.AddScoped<ReserveInventoryCommandHandler>();
     builder.Services.AddScoped<OrderInventoryRequestedEventHandler>();
     builder.Services.AddScoped<InventoryDbSeeder>();

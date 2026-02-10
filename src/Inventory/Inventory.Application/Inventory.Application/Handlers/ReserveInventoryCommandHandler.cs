@@ -1,3 +1,4 @@
+using FluentValidation;
 using Inventory.Application.Commands;
 using Inventory.Application.Ports;
 using Inventory.Application.Results;
@@ -11,25 +12,26 @@ public class ReserveInventoryCommandHandler
 {
     private readonly IInventoryItemRepository _inventoryItemRepository;
     private readonly IReservationRepository _reservationRepository;
+    private readonly IValidator<ReserveInventoryCommand> _validator;
     private readonly ILogger<ReserveInventoryCommandHandler> _logger;
 
     public ReserveInventoryCommandHandler(
         IInventoryItemRepository inventoryItemRepository,
         IReservationRepository reservationRepository,
+        IValidator<ReserveInventoryCommand> validator,
         ILogger<ReserveInventoryCommandHandler> logger)
     {
         _inventoryItemRepository = inventoryItemRepository ?? throw new ArgumentNullException(nameof(inventoryItemRepository));
         _reservationRepository = reservationRepository ?? throw new ArgumentNullException(nameof(reservationRepository));
+        _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ReserveInventoryResult> HandleAsync(ReserveInventoryCommand command)
     {
-        if (command.OrderId == Guid.Empty)
-            throw new ArgumentException("OrderId is required", nameof(command));
-
-        if (command.Items == null || command.Items.Count == 0)
-            throw new ArgumentException("At least one item is required", nameof(command));
+        var validationResult = await _validator.ValidateAsync(command);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
 
         // Idempotency: if we already have a reservation for this order, return success with existing data
         var existingReservation = await _reservationRepository.GetByOrderIdAsync(command.OrderId);
