@@ -7,14 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Ocelot" Version="23.4.3" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
@@ -22,10 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Reference all API projects -->
-    <ProjectReference Include="..\..\..\..\src\Order\Order.Api\Order.Api\Order.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Payment\Payment.Api\Payment.Api\Payment.Api.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Inventory\Inventory.Api\Inventory.Api\Inventory.Api.csproj" />
+    <None Update="ocelot.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

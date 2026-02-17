@@ -1,6 +1,21 @@
-@WebHost_HostAddress = http://localhost:5071
+@Gateway_HostAddress = http://localhost:5000
 
-GET {{WebHost_HostAddress}}/weatherforecast/
+GET {{Gateway_HostAddress}}/health
+Accept: application/json
+
+###
+
+GET {{Gateway_HostAddress}}/api/orders
+Accept: application/json
+
+###
+
+GET {{Gateway_HostAddress}}/api/payments?orderId=00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+###
+
+GET {{Gateway_HostAddress}}/api/inventory/items
 Accept: application/json
 
 ###

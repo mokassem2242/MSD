@@ -14,8 +14,9 @@ public class OrderItem : ValueObject
 
     public OrderItem(string productId, int quantity, decimal price)
     {
-        if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("ProductId cannot be null or empty", nameof(productId));
+     
+
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(productId);
         
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));

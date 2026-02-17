@@ -1,93 +1,49 @@
-# API Gateway / Web Host
+# API Gateway / Web Host (Ocelot)
 
-This is the **unified entry point** for all services in the Event-Driven Order Processing System.
+This project is now a dedicated **Ocelot API Gateway**.
 
 ## Purpose
 
-In a **Modular Monolith** architecture, this API Gateway:
-- Aggregates all service APIs (Order, Payment, Inventory, etc.)
-- Provides a single Swagger UI for all endpoints
-- Configures dependency injection for all services
-- Routes requests to the appropriate controllers
+- Exposes a single entry point for all service APIs.
+- Proxies requests to downstream services.
+- Keeps public contracts stable (`/api/orders`, `/api/payments`, `/api/inventory`).
 
-## Current Services
+## Downstream Services
 
-- ✅ **Order Service** - `/api/orders`
-- ⏳ **Payment Service** - `/api/payments` (to be implemented)
-- ⏳ **Inventory Service** - `/api/inventory` (to be implemented)
+- `Order.Api` on `http://localhost:5071`
+- `Payment.Api` on `http://localhost:5219`
+- `Inventory.Api` on `http://localhost:5112`
 
-## Running the Gateway
+Routes are defined in `ocelot.json`.
+
+## Run Locally
+
+1. Start each downstream service:
+   - `src/Order/Order.Api/Order.Api`
+   - `src/Payment/Payment.Api/Payment.Api`
+   - `src/Inventory/Inventory.Api/Inventory.Api`
+2. Start gateway:
 
 ```bash
 cd host/Bootstrapper/WebHost/WebHost
 dotnet run
 ```
 
-Then access:
-- **Swagger UI**: http://localhost:5000/swagger
-- **Health Check**: http://localhost:5000/health
-- **Order API**: http://localhost:5000/api/orders
+Gateway endpoints:
+- Health: `http://localhost:5000/health`
+- Orders: `http://localhost:5000/api/orders`
+- Payments: `http://localhost:5000/api/payments`
+- Inventory: `http://localhost:5000/api/inventory`
 
-## Architecture
+Service passthrough routes:
+- Order service root: `http://localhost:5000/services/order/{everything}`
+- Payment service root: `http://localhost:5000/services/payment/{everything}`
+- Inventory service root: `http://localhost:5000/services/inventory/{everything}`
 
-### Current: Modular Monolith
-```
-┌─────────────────────────────────────┐
-│  API Gateway (This Project)        │
-│  ┌─────────┐ ┌─────────┐ ┌────────┐│
-│  │ Order   │ │Payment  │ │Inventory││
-│  │ API     │ │ API     │ │ API    ││
-│  └─────────┘ └─────────┘ └────────┘│
-│  Single Process                     │
-└─────────────────────────────────────┘
-```
+## Add a New Service Route
 
-### Future: Microservices
-```
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│Order Service │  │Payment Service│  │Inventory     │
-│(Port 5001)   │  │(Port 5002)   │  │Service       │
-│              │  │              │  │(Port 5003)   │
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │
-       └─────────────────┼─────────────────┘
-                         │
-              ┌──────────▼──────────┐
-              │   API Gateway       │
-              │  (This Project)     │
-              │  Routes to services│
-              └─────────────────────┘
-```
-
-## Adding a New Service
-
-1. **Add project reference** in `WebHost.csproj`:
-   ```xml
-   <ProjectReference Include="..\..\..\..\src\YourService\YourService.Api\YourService.Api.csproj" />
-   ```
-
-2. **Register controllers** in `Program.cs`:
-   ```csharp
-   .AddApplicationPart(typeof(YourService.Api.Controllers.YourController).Assembly)
-   ```
-
-3. **Configure services** in `Program.cs`:
-   ```csharp
-   // YourService configuration
-   builder.Services.AddDbContext<YourServiceDbContext>(...);
-   builder.Services.AddScoped<IYourServiceRepository, YourServiceRepository>();
-   // etc.
-   ```
-
-4. **Add XML comments** to Swagger:
-   ```csharp
-   var xmlFiles = new[] { "Order.Api.xml", "YourService.Api.xml" };
-   ```
-
-## Benefits
-
-✅ **Single Entry Point** - One URL for all services  
-✅ **Unified Documentation** - All APIs in one Swagger UI  
-✅ **Easy Development** - Run everything in one process  
-✅ **Microservices-Ready** - Can extract services later without changing API contracts
-
+1. Add a route in `ocelot.json`:
+   - `UpstreamPathTemplate` for public gateway path.
+   - `DownstreamPathTemplate` for service path.
+   - `DownstreamHostAndPorts` for target service host/port.
+2. Restart the gateway (or rely on config reload if enabled by environment).
