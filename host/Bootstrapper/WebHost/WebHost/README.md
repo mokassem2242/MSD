@@ -40,6 +40,17 @@ Service passthrough routes:
 - Payment service root: `http://localhost:5000/services/payment/{everything}`
 - Inventory service root: `http://localhost:5000/services/inventory/{everything}`
 
+## Rate Limiting
+
+The gateway now throttles requests using Ocelot rate limiting.
+
+- Limit: `100` requests
+- Window: `1` minute
+- Status when exceeded: `429 Too Many Requests`
+- Client identity header: `X-ClientId`
+
+Use a stable `X-ClientId` value per client/app so requests are counted correctly per caller.
+
 ## Add a New Service Route
 
 1. Add a route in `ocelot.json`:

@@ -10,7 +10,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/orders",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 5
+      }
     },
     {
       "DownstreamPathTemplate": "/api/orders/{everything}",
@@ -22,7 +28,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/orders/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 5
+      }
     },
     {
       "DownstreamPathTemplate": "/api/payments",
@@ -34,7 +46,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/payments",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
     },
     {
       "DownstreamPathTemplate": "/api/payments/{everything}",
@@ -46,7 +64,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/payments/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
     },
     {
       "DownstreamPathTemplate": "/api/inventory",
@@ -58,7 +82,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/inventory",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
     },
     {
       "DownstreamPathTemplate": "/api/inventory/{everything}",
@@ -70,7 +100,13 @@
         }
       ],
       "UpstreamPathTemplate": "/api/inventory/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
     },
     {
       "DownstreamPathTemplate": "/{everything}",
@@ -82,7 +118,13 @@
         }
       ],
       "UpstreamPathTemplate": "/services/order/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 5
+      }
     },
     {
       "DownstreamPathTemplate": "/{everything}",
@@ -94,7 +136,13 @@
         }
       ],
       "UpstreamPathTemplate": "/services/payment/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
     },
     {
       "DownstreamPathTemplate": "/{everything}",
@@ -106,11 +154,24 @@
         }
       ],
       "UpstreamPathTemplate": "/services/inventory/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
     }
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000",
-    "RequestIdKey": "OcRequestId"
+    "RequestIdKey": "OcRequestId",
+    "RateLimitOptions": {
+      "ClientIdHeader": "X-ClientId",
+      "QuotaExceededMessage": "Too many requests. Limit is 100 requests per minute.",
+      "HttpStatusCode": 429,
+      "RateLimitCounterPrefix": "msd_gateway",
+      "DisableRateLimitHeaders": false
+    }
   }
 }
