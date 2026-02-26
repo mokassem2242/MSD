@@ -1,177 +1,240 @@
-{
-  "Routes": [
-    {
-      "DownstreamPathTemplate": "/api/orders",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5071
-        }
-      ],
-      "UpstreamPathTemplate": "/api/orders",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 5
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/orders/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5071
-        }
-      ],
-      "UpstreamPathTemplate": "/api/orders/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 5
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/payments",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5219
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payments",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/payments/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5219
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payments/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/inventory",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5112
-        }
-      ],
-      "UpstreamPathTemplate": "/api/inventory",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/inventory/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5112
-        }
-      ],
-      "UpstreamPathTemplate": "/api/inventory/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5071
-        }
-      ],
-      "UpstreamPathTemplate": "/services/order/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 5
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5219
-        }
-      ],
-      "UpstreamPathTemplate": "/services/payment/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5112
-        }
-      ],
-      "UpstreamPathTemplate": "/services/inventory/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
-      }
-    }
-  ],
-  "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5000",
-    "RequestIdKey": "OcRequestId",
-    "RateLimitOptions": {
-      "ClientIdHeader": "X-ClientId",
-      "QuotaExceededMessage": "Too many requests. Limit is 100 requests per minute.",
-      "HttpStatusCode": 429,
-      "RateLimitCounterPrefix": "msd_gateway",
-      "DisableRateLimitHeaders": false
-    }
-  }
+﻿{
+    "Routes":  [
+                   {
+                       "DownstreamPathTemplate":  "/api/orders",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5071
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/api/orders",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  5
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/api/orders/{everything}",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5071
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/api/orders/{everything}",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  5
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/api/payments",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5219
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/api/payments",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  100
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/api/payments/{everything}",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5219
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/api/payments/{everything}",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  100
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/api/inventory",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5112
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/api/inventory",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  100
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/api/inventory/{everything}",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5112
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/api/inventory/{everything}",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  100
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/{everything}",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5071
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/services/order/{everything}",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  5
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/{everything}",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5219
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/services/payment/{everything}",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  100
+                                            }
+                   },
+                   {
+                       "DownstreamPathTemplate":  "/{everything}",
+                       "DownstreamScheme":  "http",
+                       "DownstreamHostAndPorts":  [
+                                                      {
+                                                          "Host":  "localhost",
+                                                          "Port":  5112
+                                                      }
+                                                  ],
+                       "UpstreamPathTemplate":  "/services/inventory/{everything}",
+                       "UpstreamHttpMethod":  [
+                                                  "GET",
+                                                  "POST",
+                                                  "PUT",
+                                                  "DELETE",
+                                                  "PATCH",
+                                                  "OPTIONS"
+                                              ],
+                       "RateLimitOptions":  {
+                                                "EnableRateLimiting":  true,
+                                                "Period":  "1m",
+                                                "PeriodTimespan":  60,
+                                                "Limit":  100
+                                            }
+                   }
+               ],
+    "GlobalConfiguration":  {
+                                "BaseUrl":  "http://localhost:5000",
+                                "RequestIdKey":  "OcRequestId",
+                                "RateLimitOptions":  {
+                                                         "ClientIdHeader":  "X-ClientId",
+                                                         "QuotaExceededMessage":  "Too many requests. Please retry later.",
+                                                         "HttpStatusCode":  429,
+                                                         "RateLimitCounterPrefix":  "msd_gateway",
+                                                         "DisableRateLimitHeaders":  false
+                                                     }
+                            }
 }

@@ -1,4 +1,5 @@
 using BuildingBlocks.EventBus;
+using BuildingBlocks.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Payment.Application.Handlers;
 using Payment.Application.Ports;
@@ -59,7 +60,8 @@ builder.Services.AddSingleton<DbContextOptions<PaymentDbContext>>(_ =>
     return optionsBuilder.Options;
 });
 
-builder.Services.AddSingleton<IEventBus, InMemoryEventBus>();
+var rabbitMqOptions = BuildRabbitMqOptions(builder.Configuration, "payment-api");
+builder.Services.AddSingleton<IEventBus>(_ => new RabbitMqEventBus(rabbitMqOptions));
 builder.Services.AddScoped<DomainEventDispatcher>();
 
 builder.Services.AddScoped<PaymentDbContext>(serviceProvider =>
@@ -72,9 +74,13 @@ builder.Services.AddScoped<PaymentDbContext>(serviceProvider =>
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<ProcessPaymentCommandHandler>();
 builder.Services.AddScoped<RefundPaymentCommandHandler>();
+builder.Services.AddScoped<OrderCreatedEventHandler>();
+builder.Services.AddScoped<RefundRequestedEventHandler>();
 builder.Services.AddScoped<PaymentDbSeeder>();
 
 var app = builder.Build();
+
+SubscribeToIntegrationEvents(app);
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
@@ -101,3 +107,43 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
+
+static RabbitMqOptions BuildRabbitMqOptions(IConfiguration configuration, string defaultServiceName)
+{
+    var rabbitMqSection = configuration.GetSection("RabbitMq");
+    var options = new RabbitMqOptions
+    {
+        HostName = rabbitMqSection["HostName"] ?? "localhost",
+        UserName = rabbitMqSection["UserName"] ?? "guest",
+        Password = rabbitMqSection["Password"] ?? "guest",
+        VirtualHost = rabbitMqSection["VirtualHost"] ?? "/",
+        ExchangeName = rabbitMqSection["ExchangeName"] ?? "msd.events",
+        ServiceName = rabbitMqSection["ServiceName"] ?? defaultServiceName
+    };
+
+    if (int.TryParse(rabbitMqSection["Port"], out var port))
+    {
+        options.Port = port;
+    }
+
+    return options;
+}
+
+static void SubscribeToIntegrationEvents(WebApplication app)
+{
+    var eventBus = app.Services.GetRequiredService<IEventBus>();
+
+    eventBus.Subscribe<OrderCreated>(async integrationEvent =>
+    {
+        using var scope = app.Services.CreateScope();
+        var handler = scope.ServiceProvider.GetRequiredService<OrderCreatedEventHandler>();
+        await handler.HandleAsync(integrationEvent);
+    });
+
+    eventBus.Subscribe<RefundRequested>(async integrationEvent =>
+    {
+        using var scope = app.Services.CreateScope();
+        var handler = scope.ServiceProvider.GetRequiredService<RefundRequestedEventHandler>();
+        await handler.HandleAsync(integrationEvent);
+    });
+}

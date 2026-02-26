@@ -1,6 +1,6 @@
-# Postman Collection for Order Service API
+# Postman Collection for Gateway API
 
-This directory contains Postman collections and environments for testing the Order Service API.
+This directory contains Postman collections and environments for testing the API Gateway routes.
 
 ## Files
 
@@ -28,7 +28,7 @@ This directory contains Postman collections and environments for testing the Ord
 ## Setup
 
 1. **Select Environment**: 
-   - In Postman, select "Order Service - Development" from the environment dropdown (top right)
+   - In Postman, select "Gateway - Development" from the environment dropdown (top right)
 
 2. **Update Base URL** (if needed):
    - The default base URL is `http://localhost:5000`
@@ -46,6 +46,16 @@ This directory contains Postman collections and environments for testing the Ord
 - **Get Orders with Combined Filters** - GET `/api/orders?customerId={id}&status={status}&skip={skip}&take={take}`
 - **Cancel Order** - PUT `/api/orders/{id}/cancel`
 - **Cancel Order (No Reason)** - PUT `/api/orders/{id}/cancel`
+
+### Payments Folder
+- **Process Payment** - POST `/api/payments`
+- **Get Payment by ID** - GET `/api/payments/{paymentId}`
+- **Get Payment by Order ID** - GET `/api/payments?orderId={orderId}`
+- **Refund Payment** - PUT `/api/payments/{paymentId}/refund`
+
+### Inventory Folder
+- **Get All Inventory Items** - GET `/api/inventory/items`
+- **Get Inventory Item by Product ID** - GET `/api/inventory/items/{productId}`
 
 ### Health Folder
 - **Health Check** - GET `/health`
@@ -84,6 +94,8 @@ This directory contains Postman collections and environments for testing the Ord
 
 - **baseUrl**: Base URL for the API (default: `http://localhost:5000`)
 - **orderId**: Can be set manually after creating an order for easier testing
+- **paymentId**: Can be set manually after processing or fetching a payment
+- **productId**: Product lookup key for inventory requests (default: `product-1`)
 
 ## Sample Request Bodies
 
@@ -126,9 +138,9 @@ When filtering by status, use one of these values:
 1. **Start the API**: Ensure the WebHost is running on `http://localhost:5000`
 2. **Health Check**: Verify API is running with the Health Check endpoint
 3. **Create Order**: Create a new order and note the order ID
-4. **Get Order**: Retrieve the created order by ID
-5. **List Orders**: View all orders or filter by customer/status
-6. **Cancel Order**: Cancel an order (must be in Pending or Paid status)
+4. **Payments**: Process payment, then get/refund payment as needed
+5. **Inventory**: Query inventory items and product stock
+6. **Orders**: Retrieve/list/cancel orders as needed
 
 ## Troubleshooting
 

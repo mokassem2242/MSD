@@ -18,11 +18,21 @@ Routes are defined in `ocelot.json`.
 
 ## Run Locally
 
-1. Start each downstream service:
+1. Start RabbitMQ:
+
+```bash
+docker compose -f docker-compose.rabbitmq.yml up -d
+```
+
+RabbitMQ endpoints:
+- AMQP: `localhost:5672`
+- Management UI: `http://localhost:15672` (`guest` / `guest`)
+
+2. Start each downstream service:
    - `src/Order/Order.Api/Order.Api`
    - `src/Payment/Payment.Api/Payment.Api`
    - `src/Inventory/Inventory.Api/Inventory.Api`
-2. Start gateway:
+3. Start gateway:
 
 ```bash
 cd host/Bootstrapper/WebHost/WebHost
@@ -44,12 +54,35 @@ Service passthrough routes:
 
 The gateway now throttles requests using Ocelot rate limiting.
 
-- Limit: `100` requests
-- Window: `1` minute
+- Order routes: `5` requests per `1` minute
+- Payment routes: `100` requests per `1` minute
+- Inventory routes: `100` requests per `1` minute
 - Status when exceeded: `429 Too Many Requests`
 - Client identity header: `X-ClientId`
 
 Use a stable `X-ClientId` value per client/app so requests are counted correctly per caller.
+
+## Authentication And Authorization
+
+- JWT is validated at the gateway using the `GatewayJwt` authentication scheme.
+- Configure JWT settings in `appsettings*.json` under `Jwt`:
+  - `Authority` (for external IdP) or `SigningKey` (for local symmetric tokens)
+  - `Issuer`
+  - `Audience`
+- Every proxied route requires authentication plus a route claim:
+  - Order routes require `role=orders.api`
+  - Payment routes require `role=payments.api`
+  - Inventory routes require `role=inventory.api`
+
+## User Context Propagation
+
+After token validation, the gateway forwards trusted identity headers to downstream services:
+
+- `X-User-Id` from `sub`/name identifier
+- `X-User-Email` from `email`
+- `X-User-Roles` as comma-separated roles
+
+Inbound `X-User-*` headers from clients are removed first to prevent spoofing.
 
 ## Add a New Service Route
 

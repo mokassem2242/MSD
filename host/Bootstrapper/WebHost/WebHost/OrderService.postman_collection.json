@@ -1,8 +1,8 @@
 {
     "info": {
-        "_postman_id": "order-service-api",
-        "name": "Order Service API",
-        "description": "Postman collection for the Event-Driven Order Processing System - Order Service API",
+        "_postman_id": "gateway-api",
+        "name": "Gateway API",
+        "description": "Postman collection for the Event-Driven Order Processing System through the API Gateway",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -280,6 +280,184 @@
             "description": "Endpoints for managing orders"
         },
         {
+            "name": "Payments",
+            "item": [
+                {
+                    "name": "Process Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"customerId\": \"CUST001\",\n  \"amount\": 109.97\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ]
+                        },
+                        "description": "Processes a payment for an order."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Payment by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments/:paymentId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments",
+                                ":paymentId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "paymentId",
+                                    "value": "{{paymentId}}",
+                                    "description": "The unique identifier of the payment"
+                                }
+                            ]
+                        },
+                        "description": "Retrieves a payment by payment ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Payment by Order ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments?orderId={{orderId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "orderId",
+                                    "value": "{{orderId}}",
+                                    "description": "Order ID to look up payment"
+                                }
+                            ]
+                        },
+                        "description": "Retrieves a payment by order ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Refund Payment",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments/:paymentId/refund",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments",
+                                ":paymentId",
+                                "refund"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "paymentId",
+                                    "value": "{{paymentId}}",
+                                    "description": "The unique identifier of the payment to refund"
+                                }
+                            ]
+                        },
+                        "description": "Refunds a payment."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Endpoints for managing payments"
+        },
+        {
+            "name": "Inventory",
+            "item": [
+                {
+                    "name": "Get All Inventory Items",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/inventory/items",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "inventory",
+                                "items"
+                            ]
+                        },
+                        "description": "Retrieves all inventory items and stock levels."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Inventory Item by Product ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/inventory/items/:productId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "inventory",
+                                "items",
+                                ":productId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "{{productId}}",
+                                    "description": "Product ID to retrieve stock information"
+                                }
+                            ]
+                        },
+                        "description": "Retrieves inventory for one product."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Endpoints for managing inventory"
+        },
+        {
             "name": "Health",
             "item": [
                 {
@@ -307,6 +485,21 @@
         {
             "key": "baseUrl",
             "value": "http://localhost:5000",
+            "type": "string"
+        },
+        {
+            "key": "orderId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "paymentId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "productId",
+            "value": "product-1",
             "type": "string"
         }
     ]
